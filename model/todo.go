@@ -4,6 +4,6 @@ import "gorm.io/gorm"
 
 type Todo struct {
 	gorm.Model
-	Name   string `json:"name"`
-	Status string `json:"status"`
+	Name   string `json:"name" binding:"required"`
+	Status string `json:"status" binding:"required,oneof=done pending" `
 }
