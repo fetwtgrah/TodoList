@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var Conf *Config
+var Conf Config
 
 func InitConfig() error {
 	viper.SetConfigName("config")

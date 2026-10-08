@@ -1,1907 +1,352 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Todo List</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
-          rel="stylesheet">
-
+    <title>清单</title>
     <style>
-        /* =========================
-           基础变量
-        ========================= */
-
         :root {
-            --bg: #14171c;
-
-            --paper: #f7f5ef;
-            --paper-dim: #efece3;
-
-            --white: #ffffff;
-
-            --ink: #1a1d22;
-            --ink-soft: #6a6d73;
-            --ink-light: #999b9f;
-
-            --line: #d8d0ba;
-
-            --accent: #c98a3e;
-            --accent-hover: #b5772f;
-            --accent-soft: #e9c99a;
-
-            --done: #4f7068;
-            --danger: #b5533c;
-            --danger-hover: #963f2c;
+            --paper: #eeece4;
+            --ink: #2a2a26;
+            --ink-soft: #6b6a63;
+            --line: #d8d5c9;
+            --accent: #1f5f5b;
+            --accent-soft: #dfe9e8;
+            --pending: #b8862b;
+            --pending-soft: #f3e8d3;
+            --danger: #a3402f;
         }
 
-
-        /* =========================
-           全局
-        ========================= */
-
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             min-height: 100vh;
-
-            background:
-                    radial-gradient(
-                            circle at 15% 10%,
-                            rgba(201, 138, 62, 0.07),
-                            transparent 40%
-                    ),
-                    radial-gradient(
-                            circle at 85% 90%,
-                            rgba(79, 112, 104, 0.08),
-                            transparent 45%
-                    ),
-                    var(--bg);
-
-            font-family: 'Inter', sans-serif;
+            background: var(--paper);
             color: var(--ink);
-
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
             display: flex;
             justify-content: center;
-
-            padding: 64px 20px;
+            padding: 48px 20px;
         }
 
-
-        /* =========================
-           主页面
-        ========================= */
-
-        .page {
+        .sheet {
             width: 100%;
-            max-width: 680px;
-
-            background: var(--paper);
-
-            border-radius: 4px;
-
-            box-shadow:
-                    0 30px 60px -20px rgba(0, 0, 0, 0.55);
-
-            position: relative;
-
-            padding: 48px 44px 40px 76px;
-
-            min-height: 70vh;
+            max-width: 560px;
         }
-
-
-        /* 左侧装饰线 */
-
-        .page::before {
-            content: "";
-
-            position: absolute;
-
-            left: 44px;
-            top: 0;
-            bottom: 0;
-
-            width: 1px;
-
-            background: var(--line);
-        }
-
-
-        /* =========================
-           Header
-        ========================= */
 
         header {
+            margin-bottom: 32px;
+            border-bottom: 2px solid var(--ink);
+            padding-bottom: 16px;
             display: flex;
-            align-items: baseline;
             justify-content: space-between;
-
-            margin-bottom: 28px;
-
-            border-bottom: 1px solid var(--line);
-
-            padding-bottom: 18px;
+            align-items: baseline;
         }
 
         h1 {
-            font-family: 'Lora', serif;
-
-            font-weight: 600;
-
-            font-size: 32px;
-
+            font-size: 28px;
+            font-weight: 700;
             margin: 0;
-
             letter-spacing: -0.01em;
         }
 
-        .subtitle {
-            margin-top: 5px;
-
-            color: var(--ink-soft);
-
-            font-size: 13px;
-        }
-
-        .stats {
-            font-family: 'IBM Plex Mono', monospace;
-
-            font-size: 13px;
-
-            color: var(--ink-soft);
-
-            white-space: nowrap;
-        }
-
-        .stats strong {
-            color: var(--accent);
-
-            font-weight: 500;
-        }
-
-
-        /* =========================
-           添加 Todo
-        ========================= */
-
-        .add-row {
-            display: flex;
-
-            gap: 10px;
-
-            margin-bottom: 22px;
-        }
-
-        .add-row input {
-            flex: 1;
-
-            font-family: 'Inter', sans-serif;
-
-            font-size: 15px;
-
-            padding: 12px 14px;
-
-            border: 1px solid var(--line);
-
-            border-radius: 3px;
-
-            background: var(--white);
-
-            color: var(--ink);
-
-            outline: none;
-
-            transition:
-                    border-color 0.15s ease,
-                    box-shadow 0.15s ease;
-        }
-
-        .add-row input:focus {
-            border-color: var(--accent);
-
-            box-shadow:
-                    0 0 0 3px rgba(201, 138, 62, 0.08);
-        }
-
-        .add-row input::placeholder {
-            color: #aaa79e;
-        }
-
-        .add-row button {
-            min-width: 72px;
-
-            font-family: 'Inter', sans-serif;
-
-            font-weight: 600;
-
+        #count {
             font-size: 14px;
-
-            border: none;
-
-            border-radius: 3px;
-
-            background: var(--accent);
-
-            color: white;
-
-            cursor: pointer;
-
-            transition:
-                    background 0.15s ease,
-                    transform 0.1s ease;
-        }
-
-        .add-row button:hover {
-            background: var(--accent-hover);
-        }
-
-        .add-row button:active {
-            transform: scale(0.97);
-        }
-
-        .add-row button:disabled {
-            background: var(--accent-soft);
-
-            cursor: not-allowed;
-
-            transform: none;
-        }
-
-
-        /* =========================
-           筛选 Tabs
-        ========================= */
-
-        .tabs {
-            display: flex;
-
-            gap: 5px;
-
-            margin-bottom: 18px;
-        }
-
-        .tabs button {
-            font-family: 'Inter', sans-serif;
-
-            font-size: 13px;
-
-            font-weight: 500;
-
-            padding: 7px 14px;
-
-            border: 1px solid transparent;
-
-            background: transparent;
-
             color: var(--ink-soft);
+        }
 
-            border-radius: 3px;
+        form#add-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
 
+        #name-input {
+            flex: 1;
+            padding: 12px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: 6px;
+            font-size: 15px;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        #name-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button {
+            font-family: inherit;
             cursor: pointer;
-
-            transition: all 0.15s ease;
+            border: none;
         }
 
-        .tabs button:hover {
-            color: var(--ink);
-
-            background: rgba(0, 0, 0, 0.025);
+        #add-form button {
+            padding: 12px 20px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
         }
 
-        .tabs button.active {
-            background: var(--paper-dim);
+        #add-form button:hover { background: var(--accent); }
 
-            color: var(--ink);
-
-            border-color: var(--line);
-        }
-
-
-        /* =========================
-           Todo List
-        ========================= */
-
-        .todo-list {
+        ul#list {
             list-style: none;
-
             margin: 0;
-
             padding: 0;
         }
 
-        .todo-item {
+        li.item {
             display: flex;
-
             align-items: center;
-
             gap: 12px;
-
             padding: 14px 4px;
-
             border-bottom: 1px solid var(--line);
-
-            animation: fadeIn 0.18s ease;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(3px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-
-        /* =========================
-           Checkbox
-        ========================= */
-
-        .checkbox {
+        .status-toggle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--pending);
+            background: transparent;
             flex-shrink: 0;
-
-            width: 19px;
-            height: 19px;
-
-            border: 1.5px solid var(--ink-soft);
-
-            border-radius: 3px;
-
-            cursor: pointer;
-
             position: relative;
-
-            background: white;
-
-            transition: all 0.15s ease;
         }
 
-        .checkbox:hover {
-            border-color: var(--done);
+        .status-toggle.done {
+            border-color: var(--accent);
+            background: var(--accent);
         }
 
-        .checkbox.checked {
-            background: var(--done);
-
-            border-color: var(--done);
-        }
-
-        .checkbox.checked::after {
+        .status-toggle.done::after {
             content: "";
-
             position: absolute;
-
-            left: 5px;
+            left: 6px;
             top: 2px;
-
             width: 5px;
-            height: 9px;
-
-            border: solid white;
-
-            border-width: 0 2px 2px 0;
-
+            height: 10px;
+            border-right: 2px solid var(--paper);
+            border-bottom: 2px solid var(--paper);
             transform: rotate(45deg);
         }
 
-
-        /* =========================
-           Todo 名称
-        ========================= */
-
-        .todo-name {
+        .item-name {
             flex: 1;
-
-            font-size: 15px;
-
-            line-height: 1.5;
-
+            font-size: 16px;
             word-break: break-word;
-
-            cursor: default;
-
-            transition: color 0.15s ease;
         }
 
-        .todo-item.done .todo-name {
+        .item-name.done {
             color: var(--ink-soft);
-
             text-decoration: line-through;
-
-            text-decoration-color: var(--done);
         }
 
-
-        /* =========================
-           操作按钮
-        ========================= */
-
-        .actions {
-            display: flex;
-
-            align-items: center;
-
-            gap: 3px;
-
-            opacity: 0;
-
-            transition: opacity 0.15s ease;
-        }
-
-        .todo-item:hover .actions {
-            opacity: 1;
-        }
-
-        .action-btn {
-            width: 27px;
-            height: 27px;
-
-            border: none;
-
-            background: transparent;
-
-            border-radius: 3px;
-
-            color: var(--ink-soft);
-
-            cursor: pointer;
-
-            font-size: 14px;
-
-            transition:
-                    background 0.15s ease,
-                    color 0.15s ease;
-        }
-
-        .action-btn:hover {
-            background: var(--paper-dim);
-
-            color: var(--ink);
-        }
-
-        .action-btn.delete:hover {
-            color: var(--danger);
-
-            background: rgba(181, 83, 60, 0.08);
-        }
-
-
-        /* =========================
-           编辑状态
-        ========================= */
-
-        .edit-input {
-            flex: 1;
-
-            min-width: 0;
-
-            font-family: 'Inter', sans-serif;
-
-            font-size: 15px;
-
-            padding: 7px 9px;
-
-            border: 1px solid var(--accent);
-
-            border-radius: 3px;
-
-            background: white;
-
-            color: var(--ink);
-
+        .item-name[contenteditable="true"] {
             outline: none;
+            border-bottom: 1px dashed var(--accent);
         }
 
-
-        /* =========================
-           空状态
-        ========================= */
-
-        .empty-state {
-            padding: 50px 4px;
-
-            text-align: center;
-
-            color: var(--ink-soft);
-
-            font-size: 14px;
-        }
-
-        .empty-state span {
-            display: block;
-
-            font-family: 'Lora', serif;
-
-            font-style: italic;
-
-            font-size: 18px;
-
-            color: var(--ink);
-
-            margin-bottom: 7px;
-        }
-
-
-        /* =========================
-           Loading
-        ========================= */
-
-        .loading {
-            padding: 50px 4px;
-
-            text-align: center;
-
-            color: var(--ink-soft);
-
-            font-size: 14px;
-        }
-
-        .loading::after {
-            content: "...";
-
-            animation: dots 1.2s infinite;
-        }
-
-        @keyframes dots {
-            0% {
-                content: ".";
-            }
-
-            33% {
-                content: "..";
-            }
-
-            66% {
-                content: "...";
-            }
-        }
-
-
-        /* =========================
-           Toast
-        ========================= */
-
-        .toast {
-            position: fixed;
-
-            bottom: 28px;
-            left: 50%;
-
-            transform:
-                    translateX(-50%)
-                    translateY(15px);
-
-            background: var(--ink);
-
-            color: var(--paper);
-
-            font-size: 13px;
-
-            padding: 10px 18px;
-
+        .tag {
+            font-size: 12px;
+            padding: 3px 8px;
             border-radius: 4px;
-
-            opacity: 0;
-
-            pointer-events: none;
-
-            transition:
-                    opacity 0.2s ease,
-                    transform 0.2s ease;
-
-            z-index: 100;
+            white-space: nowrap;
         }
 
-        .toast.show {
-            opacity: 1;
+        .tag.pending { background: var(--pending-soft); color: var(--pending); }
+        .tag.done { background: var(--accent-soft); color: var(--accent); }
 
-            transform:
-                    translateX(-50%)
-                    translateY(0);
+        .del-btn {
+            background: transparent;
+            color: var(--ink-soft);
+            font-size: 18px;
+            line-height: 1;
+            padding: 4px 6px;
+            border-radius: 4px;
         }
 
-        .toast.error {
-            background: var(--danger);
+        .del-btn:hover { color: var(--danger); background: #f3e2de; }
+
+        #empty {
+            text-align: center;
+            color: var(--ink-soft);
+            padding: 40px 0;
+            font-size: 14px;
+            display: none;
         }
 
-
-        /* =========================
-           Footer
-        ========================= */
-
-        .footer {
-            margin-top: 28px;
-
-            padding-top: 15px;
-
-            border-top: 1px solid var(--line);
-
-            display: flex;
-
-            justify-content: space-between;
-
-            color: var(--ink-light);
-
-            font-family: 'IBM Plex Mono', monospace;
-
-            font-size: 11px;
-        }
-
-
-        /* =========================
-           手机适配
-        ========================= */
-
-        @media (max-width: 600px) {
-
-            body {
-                padding: 20px 12px;
-            }
-
-            .page {
-                padding: 32px 20px 30px 45px;
-
-                min-height: calc(100vh - 40px);
-            }
-
-            .page::before {
-                left: 25px;
-            }
-
-            header {
-                align-items: flex-start;
-
-                gap: 15px;
-            }
-
-            h1 {
-                font-size: 27px;
-            }
-
-            .stats {
-                font-size: 11px;
-            }
-
-            .add-row {
-                flex-direction: column;
-            }
-
-            .add-row button {
-                height: 42px;
-            }
-
-            .actions {
-                opacity: 1;
-            }
-
-            .footer {
-                display: none;
-            }
+        #error {
+            display: none;
+            background: #f3e2de;
+            color: var(--danger);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
         }
     </style>
 </head>
-
 <body>
 
-<div class="page">
-
-    <!-- =========================
-         Header
-    ========================== -->
-
+<div class="sheet">
     <header>
-
-        <div>
-            <h1>Todo</h1>
-
-            <div class="subtitle">
-                今天也要完成一点事情
-            </div>
-        </div>
-
-        <div
-                class="stats"
-                id="stats"
-        >
-            0 open · 0 done
-        </div>
-
+        <h1>清单</h1>
+        <span id="count"></span>
     </header>
 
+    <div id="error"></div>
 
-    <!-- =========================
-         添加 Todo
-    ========================== -->
-
-    <form
-            class="add-row"
-            id="addForm"
-    >
-
-        <input
-                type="text"
-                id="nameInput"
-                placeholder="添加一条待办…"
-                autocomplete="off"
-                maxlength="200"
-        >
-
-        <button
-                type="submit"
-                id="addBtn"
-        >
-            添加
-        </button>
-
+    <form id="add-form">
+        <input id="name-input" type="text" placeholder="添加一件事…" autocomplete="off" required>
+        <button type="submit">添加</button>
     </form>
 
-
-    <!-- =========================
-         筛选
-    ========================== -->
-
-    <div
-            class="tabs"
-            id="tabs"
-    >
-
-        <button
-                data-filter="all"
-                class="active"
-        >
-            全部
-        </button>
-
-        <button
-                data-filter="active"
-        >
-            未完成
-        </button>
-
-        <button
-                data-filter="done"
-        >
-            已完成
-        </button>
-
-    </div>
-
-
-    <!-- =========================
-         Todo List
-    ========================== -->
-
-    <ul
-            class="todo-list"
-            id="todoList"
-    ></ul>
-
-
-    <!-- =========================
-         Footer
-    ========================== -->
-
-    <div class="footer">
-
-        <span>
-            TODO LIST
-        </span>
-
-        <span>
-            KEEP MOVING
-        </span>
-
-    </div>
-
+    <ul id="list"></ul>
+    <div id="empty">还没有任何事项</div>
 </div>
 
-
-<!-- Toast -->
-
-<div
-        class="toast"
-        id="toast"
-></div>
-
-
 <script>
+    const API = '/api/v1/todo';
 
-    /* =========================================================
-       API 配置
-    ========================================================= */
+    const listEl = document.getElementById('list');
+    const emptyEl = document.getElementById('empty');
+    const countEl = document.getElementById('count');
+    const errorEl = document.getElementById('error');
+    const form = document.getElementById('add-form');
+    const nameInput = document.getElementById('name-input');
 
-    const API_BASE = '/api/v1/todo';
-
-
-    /* =========================================================
-       前端状态
-    ========================================================= */
-
-    const state = {
-
-        // Todo 数据
-        todos: [],
-
-        // 当前筛选
-        filter: 'all',
-
-        // 是否正在加载
-        loading: false
-
-    };
-
-
-    /* =========================================================
-       DOM
-    ========================================================= */
-
-    const els = {
-
-        list: document.getElementById('todoList'),
-
-        stats: document.getElementById('stats'),
-
-        addForm: document.getElementById('addForm'),
-
-        nameInput: document.getElementById('nameInput'),
-
-        addBtn: document.getElementById('addBtn'),
-
-        tabs: document.getElementById('tabs'),
-
-        toast: document.getElementById('toast')
-
-    };
-
-
-    /* =========================================================
-       Todo 数据兼容函数
-
-       GORM 默认返回：
-
-       {
-           "ID": 1,
-           "CreatedAt": "...",
-           "UpdatedAt": "...",
-           "Name": "...",
-           "Status": "pending"
-       }
-
-       但是如果 JSON tag 生效，也可能是：
-
-       {
-           "id": 1,
-           "name": "...",
-           "status": "pending"
-       }
-    ========================================================= */
-
-    function getId(todo) {
-
-        return todo.ID ?? todo.id;
-
+    function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+        setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
     }
 
-
-    function getName(todo) {
-
-        return todo.Name ?? todo.name ?? '';
-
+    async function request(url, options = {}) {
+        const res = await fetch(url, {
+            headers: { 'Content-Type': 'application/json' },
+            ...options,
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            throw new Error(body.msg || `请求失败 (${res.status})`);
+        }
+        return body;
     }
 
+    function render(todos) {
+        listEl.innerHTML = '';
+        emptyEl.style.display = todos.length === 0 ? 'block' : 'none';
+        countEl.textContent = todos.length ? `${todos.filter(t => t.status === 'pending').length} 项待完成` : '';
 
-    function getStatus(todo) {
+        todos.forEach(todo => {
+            const li = document.createElement('li');
+            li.className = 'item';
 
-        return todo.Status ?? todo.status ?? '';
+            const toggle = document.createElement('button');
+            toggle.className = 'status-toggle' + (todo.status === 'done' ? ' done' : '');
+            toggle.title = todo.status === 'done' ? '标记为待完成' : '标记为已完成';
+            toggle.onclick = () => updateStatus(todo, todo.status === 'done' ? 'pending' : 'done');
 
-    }
-
-
-    function isDone(todo) {
-
-        return getStatus(todo) === 'done';
-
-    }
-
-
-    /* =========================================================
-       Toast
-    ========================================================= */
-
-    function showToast(message, isError = false) {
-
-        els.toast.textContent = message;
-
-        els.toast.className =
-            'toast show' +
-            (isError ? ' error' : '');
-
-        clearTimeout(showToast.timer);
-
-        showToast.timer = setTimeout(() => {
-
-            els.toast.className = 'toast';
-
-        }, 2200);
-
-    }
-
-
-    /* =========================================================
-       API 请求封装
-    ========================================================= */
-
-    async function apiRequest(
-        method,
-        url,
-        body = null
-    ) {
-
-        const options = {
-            method: method,
-
-            headers: body
-                ? {
-                    'Content-Type':
-                        'application/json'
+            const name = document.createElement('span');
+            name.className = 'item-name' + (todo.status === 'done' ? ' done' : '');
+            name.textContent = todo.name;
+            name.setAttribute('contenteditable', 'true');
+            name.addEventListener('blur', () => {
+                const newVal = name.textContent.trim();
+                if (newVal && newVal !== todo.name) {
+                    updateContent(todo, newVal);
+                } else {
+                    name.textContent = todo.name;
                 }
-                : {}
-        };
+            });
+            name.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); name.blur(); }
+            });
 
+            const tag = document.createElement('span');
+            tag.className = 'tag ' + todo.status;
+            tag.textContent = todo.status === 'done' ? '已完成' : '待完成';
 
-        if (body) {
+            const del = document.createElement('button');
+            del.className = 'del-btn';
+            del.textContent = '×';
+            del.title = '删除';
+            del.onclick = () => removeTodo(todo);
 
-            options.body =
-                JSON.stringify(body);
-
-        }
-
-
-        const response =
-            await fetch(
-                url,
-                options
-            );
-
-
-        let payload = null;
-
-
-        try {
-
-            payload =
-                await response.json();
-
-        } catch (error) {
-
-            // 后端没有返回 JSON
-            payload = null;
-
-        }
-
-
-        if (!response.ok) {
-
-            const message =
-                payload?.msg ||
-                payload?.message ||
-                `请求失败 (${response.status})`;
-
-
-            throw new Error(
-                typeof message === 'string'
-                    ? message
-                    : JSON.stringify(message)
-            );
-
-        }
-
-
-        return payload;
-
+            li.append(toggle, name, tag, del);
+            listEl.appendChild(li);
+        });
     }
-
-
-    /* =========================================================
-       获取全部 Todo
-
-       GET /api/v1/todo
-    ========================================================= */
 
     async function loadTodos() {
-
-        state.loading = true;
-
-        render();
-
-
         try {
-
-            const payload =
-                await apiRequest(
-                    'GET',
-                    API_BASE
-                );
-
-
-            state.todos =
-                payload?.data || [];
-
-
-        } catch (error) {
-
-            console.error(
-                '获取 Todo 失败:',
-                error
-            );
-
-
-            state.todos = [];
-
-
-            showToast(
-                '加载失败：' +
-                error.message,
-                true
-            );
-
-        } finally {
-
-            state.loading = false;
-
-            render();
-
+            const { data } = await request(API);
+            render(data || []);
+        } catch (e) {
+            showError(e.message);
         }
-
     }
-
-
-    /* =========================================================
-       添加 Todo
-
-       POST /api/v1/todo
-
-       请求：
-
-       {
-           name: "学习 Go",
-           status: "pending"
-       }
-    ========================================================= */
 
     async function addTodo(name) {
-
-        if (!name.trim()) {
-
-            return;
-
-        }
-
-
-        els.addBtn.disabled = true;
-
-        els.nameInput.disabled = true;
-
-
         try {
-
-            const payload =
-                await apiRequest(
-                    'POST',
-                    API_BASE,
-                    {
-                        name: name.trim(),
-
-                        status: 'pending'
-                    }
-                );
-
-
-            const created =
-                payload?.data;
-
-
-            if (created) {
-
-                // 放到最前面
-                state.todos.unshift(created);
-
-            } else {
-
-                // 如果后端没有返回 data
-                // 重新获取
-                await loadTodos();
-
-            }
-
-
-            render();
-
-            showToast('添加成功');
-
-
-        } catch (error) {
-
-            console.error(
-                '添加 Todo 失败:',
-                error
-            );
-
-
-            showToast(
-                '添加失败：' +
-                error.message,
-                true
-            );
-
-        } finally {
-
-            els.addBtn.disabled = false;
-
-            els.nameInput.disabled = false;
-
-            els.nameInput.focus();
-
+            await request(API, {
+                method: 'POST',
+                body: JSON.stringify({ name, status: 'pending' }),
+            });
+            await loadTodos();
+        } catch (e) {
+            showError(e.message);
         }
-
     }
 
-
-    /* =========================================================
-       修改 Todo 状态
-
-       PUT /api/v1/todo/:id
-
-       你的后端要求：
-
-       {
-           content: "...",
-           status: "done"
-       }
-    ========================================================= */
-
-    async function updateTodo(
-        todo,
-        content,
-        status
-    ) {
-
-        const id = getId(todo);
-
-
-        return await apiRequest(
-            'PUT',
-            `${API_BASE}/${id}`,
-            {
-                content: content,
-
-                status: status
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       完成 / 取消完成
-    ========================================================= */
-
-    async function toggleTodo(todo) {
-
-        const id = getId(todo);
-
-        const oldStatus =
-            getStatus(todo);
-
-        const newStatus =
-            oldStatus === 'done'
-                ? 'pending'
-                : 'done';
-
-
-        // 先保存
-        const index =
-            state.todos.findIndex(
-                item => getId(item) === id
-            );
-
-
-        if (index === -1) {
-
-            return;
-
-        }
-
-
-        /*
-         * 乐观更新
-         *
-         * 先修改页面，
-         * 后端失败再恢复
-         */
-
-        state.todos[index].Status =
-            newStatus;
-
-
-        render();
-
-
+    async function updateStatus(todo, status) {
         try {
-
-            const payload =
-                await updateTodo(
-                    todo,
-                    getName(todo),
-                    newStatus
-                );
-
-
-            /*
-             * 如果后端返回更新后的数据，
-             * 用后端数据覆盖本地数据
-             */
-
-            if (payload?.data) {
-
-                state.todos[index] =
-                    payload.data;
-
-            }
-
-
-            render();
-
-
-        } catch (error) {
-
-            // 更新失败，恢复
-            state.todos[index].Status =
-                oldStatus;
-
-
-            render();
-
-
-            showToast(
-                '更新失败：' +
-                error.message,
-                true
-            );
-
+            await request(`${API}/${todo.ID}`, {
+                method: 'PUT',
+                body: JSON.stringify({ status }),
+            });
+            await loadTodos();
+        } catch (e) {
+            showError(e.message);
         }
-
     }
 
-
-    /* =========================================================
-       删除 Todo
-
-       DELETE /api/v1/todo/:id
-    ========================================================= */
-
-    async function deleteTodo(todo) {
-
-        const id = getId(todo);
-
-
-        const confirmed =
-            confirm(
-                `确定要删除「${getName(todo)}」吗？`
-            );
-
-
-        if (!confirmed) {
-
-            return;
-
-        }
-
-
-        // 保存旧数据
-        const oldTodos =
-            [...state.todos];
-
-
-        // 页面先删除
-        state.todos =
-            state.todos.filter(
-                item =>
-                    getId(item) !== id
-            );
-
-
-        render();
-
-
+    async function updateContent(todo, content) {
         try {
-
-            await apiRequest(
-                'DELETE',
-                `${API_BASE}/${id}`
-            );
-
-
-            showToast('已删除');
-
-
-        } catch (error) {
-
-            // 删除失败恢复
-            state.todos =
-                oldTodos;
-
-
-            render();
-
-
-            showToast(
-                '删除失败：' +
-                error.message,
-                true
-            );
-
+            await request(`${API}/${todo.ID}`, {
+                method: 'PUT',
+                body: JSON.stringify({ content }),
+            });
+            await loadTodos();
+        } catch (e) {
+            showError(e.message);
         }
-
     }
 
-
-    /* =========================================================
-       编辑 Todo
-    ========================================================= */
-
-    async function editTodo(todo) {
-
-        const id = getId(todo);
-
-        const oldName =
-            getName(todo);
-
-
-        const newName =
-            prompt(
-                '修改 Todo：',
-                oldName
-            );
-
-
-        // 用户点击取消
-        if (newName === null) {
-
-            return;
-
-        }
-
-
-        const content =
-            newName.trim();
-
-
-        if (!content) {
-
-            showToast(
-                'Todo 内容不能为空',
-                true
-            );
-
-            return;
-
-        }
-
-
-        if (content === oldName) {
-
-            return;
-
-        }
-
-
+    async function removeTodo(todo) {
         try {
-
-            const payload =
-                await updateTodo(
-                    todo,
-                    content,
-                    getStatus(todo)
-                );
-
-
-            /*
-             * 优先使用后端返回的数据
-             */
-
-            if (payload?.data) {
-
-                const index =
-                    state.todos.findIndex(
-                        item =>
-                            getId(item) === id
-                    );
-
-
-                if (index !== -1) {
-
-                    state.todos[index] =
-                        payload.data;
-
-                }
-
-            } else {
-
-                /*
-                 * 后端没有返回数据，
-                 * 修改本地数据
-                 */
-
-                const index =
-                    state.todos.findIndex(
-                        item =>
-                            getId(item) === id
-                    );
-
-
-                if (index !== -1) {
-
-                    state.todos[index].Name =
-                        content;
-
-                }
-
-            }
-
-
-            render();
-
-            showToast('修改成功');
-
-
-        } catch (error) {
-
-            showToast(
-                '修改失败：' +
-                error.message,
-                true
-            );
-
+            await request(`${API}/${todo.ID}`, { method: 'DELETE' });
+            await loadTodos();
+        } catch (e) {
+            showError(e.message);
         }
-
     }
 
-
-    /* =========================================================
-       根据筛选条件获取 Todo
-    ========================================================= */
-
-    function getFilteredTodos() {
-
-        return state.todos.filter(todo => {
-
-            const done =
-                isDone(todo);
-
-
-            if (state.filter === 'active') {
-
-                return !done;
-
-            }
-
-
-            if (state.filter === 'done') {
-
-                return done;
-
-            }
-
-
-            return true;
-
-        });
-
-    }
-
-
-    /* =========================================================
-       更新统计
-    ========================================================= */
-
-    function updateStats() {
-
-        const doneCount =
-            state.todos.filter(
-                todo => isDone(todo)
-            ).length;
-
-
-        const openCount =
-            state.todos.length -
-            doneCount;
-
-
-        els.stats.innerHTML =
-            `<strong>${openCount}</strong> open · ${doneCount} done`;
-
-    }
-
-
-    /* =========================================================
-       创建 Todo DOM
-    ========================================================= */
-
-    function createTodoElement(todo) {
-
-        const done =
-            isDone(todo);
-
-
-        const li =
-            document.createElement('li');
-
-
-        li.className =
-            'todo-item' +
-            (done ? ' done' : '');
-
-
-        /*
-         * Checkbox
-         */
-
-        const checkbox =
-            document.createElement('div');
-
-
-        checkbox.className =
-            'checkbox' +
-            (done ? ' checked' : '');
-
-
-        checkbox.title =
-            done
-                ? '标记为未完成'
-                : '标记为完成';
-
-
-        checkbox.addEventListener(
-            'click',
-            () => toggleTodo(todo)
-        );
-
-
-        /*
-         * Todo 名称
-         */
-
-        const name =
-            document.createElement('div');
-
-
-        name.className =
-            'todo-name';
-
-
-        name.textContent =
-            getName(todo);
-
-
-        /*
-         * 操作区域
-         */
-
-        const actions =
-            document.createElement('div');
-
-
-        actions.className =
-            'actions';
-
-
-        /*
-         * 编辑按钮
-         */
-
-        const editBtn =
-            document.createElement('button');
-
-
-        editBtn.className =
-            'action-btn';
-
-
-        editBtn.textContent =
-            '✎';
-
-
-        editBtn.title =
-            '编辑';
-
-
-        editBtn.addEventListener(
-            'click',
-            () => editTodo(todo)
-        );
-
-
-        /*
-         * 删除按钮
-         */
-
-        const deleteBtn =
-            document.createElement('button');
-
-
-        deleteBtn.className =
-            'action-btn delete';
-
-
-        deleteBtn.textContent =
-            '✕';
-
-
-        deleteBtn.title =
-            '删除';
-
-
-        deleteBtn.addEventListener(
-            'click',
-            () => deleteTodo(todo)
-        );
-
-
-        /*
-         * 组装
-         */
-
-        actions.appendChild(editBtn);
-
-        actions.appendChild(deleteBtn);
-
-
-        li.appendChild(checkbox);
-
-        li.appendChild(name);
-
-        li.appendChild(actions);
-
-
-        return li;
-
-    }
-
-
-    /* =========================================================
-       Render
-    ========================================================= */
-
-    function render() {
-
-        updateStats();
-
-
-        /*
-         * Loading
-         */
-
-        if (state.loading) {
-
-            els.list.innerHTML = `
-                <li class="loading">
-                    正在加载
-                </li>
-            `;
-
-            return;
-
-        }
-
-
-        /*
-         * 获取筛选后的数据
-         */
-
-        const filtered =
-            getFilteredTodos();
-
-
-        els.list.innerHTML = '';
-
-
-        /*
-         * 空状态
-         */
-
-        if (filtered.length === 0) {
-
-            const empty =
-                document.createElement('li');
-
-
-            empty.className =
-                'empty-state';
-
-
-            let title =
-                '一片空白';
-
-
-            let description =
-                '清单是空的';
-
-
-            if (state.filter === 'active') {
-
-                description =
-                    '没有未完成的事项';
-
-            }
-
-
-            if (state.filter === 'done') {
-
-                description =
-                    '还没有完成的事项';
-
-            }
-
-
-            empty.innerHTML = `
-                <span>${title}</span>
-                ${description}
-            `;
-
-
-            els.list.appendChild(empty);
-
-            return;
-
-        }
-
-
-        /*
-         * 渲染 Todo
-         */
-
-        filtered.forEach(todo => {
-
-            const element =
-                createTodoElement(todo);
-
-
-            els.list.appendChild(element);
-
-        });
-
-    }
-
-
-    /* =========================================================
-       添加 Todo 表单
-    ========================================================= */
-
-    els.addForm.addEventListener(
-        'submit',
-        async event => {
-
-            event.preventDefault();
-
-
-            const name =
-                els.nameInput.value.trim();
-
-
-            if (!name) {
-
-                showToast(
-                    '请输入 Todo 内容',
-                    true
-                );
-
-                els.nameInput.focus();
-
-                return;
-
-            }
-
-
-            /*
-             * 清空输入框
-             */
-
-            els.nameInput.value = '';
-
-
-            await addTodo(name);
-
-        }
-    );
-
-
-    /* =========================================================
-       Tab 切换
-    ========================================================= */
-
-    els.tabs.addEventListener(
-        'click',
-        event => {
-
-            const button =
-                event.target.closest(
-                    'button[data-filter]'
-                );
-
-
-            if (!button) {
-
-                return;
-
-            }
-
-
-            state.filter =
-                button.dataset.filter;
-
-
-            /*
-             * 修改 active 样式
-             */
-
-            [...els.tabs.children]
-                .forEach(tab => {
-
-                    tab.classList.toggle(
-                        'active',
-                        tab === button
-                    );
-
-                });
-
-
-            render();
-
-        }
-    );
-
-
-    /* =========================================================
-       键盘快捷操作
-
-       Enter -> 添加
-       Escape -> 清空
-    ========================================================= */
-
-    els.nameInput.addEventListener(
-        'keydown',
-        event => {
-
-            if (event.key === 'Escape') {
-
-                els.nameInput.value = '';
-
-            }
-
-        }
-    );
-
-
-    /* =========================================================
-       页面启动
-    ========================================================= */
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = nameInput.value.trim();
+        if (!val) return;
+        addTodo(val);
+        nameInput.value = '';
+    });
 
     loadTodos();
-
 </script>
 
 </body>
 </html>
-
