@@ -29,27 +29,3 @@
 
 ---
 
-## 📁 项目结构
-
-```text
-TodoList/
-│
-├── configs/
-│   └── database.go          # 数据库连接配置
-│
-├── controller/
-│   └── todo.go              # Todo 业务处理
-│
-├── model/
-│   └── todo.go              # Todo 数据模型
-│
-├── router/
-│   └── router.go            # 路由配置
-│
-├── static/
-│   └── index.html           # 前端页面
-│
-├── go.mod
-├── go.sum
-│
-└── main.go                  # 项目入口
